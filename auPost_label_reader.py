@@ -151,4 +151,5 @@ for i in range(len(awb)):
     try_click(driver, "//input[@value='Update']")
     time.sleep(1)
 
+driver.close()
 print(f"Your work is done. {len(awb)} order(s) affected.")
