@@ -47,7 +47,7 @@ def is_Tearribles_label(filepath):
 last_pdf = list_pdfs[0]
 for i in list_pdfs:
     short_i = i.replace(download_folder_path+"\\", "")
-    print(f"Inspecting {short_i}:", end=" ")
+    print(f"Inspecting {short_i: <45}", end=" ")
     if is_Tearribles_label(i):
         last_pdf = i
         print(f"{Fore.GREEN}Label found!{Style.RESET_ALL}")
@@ -81,7 +81,7 @@ print(f"The selected file has {Fore.YELLOW}{len(all_text)}{Style.RESET_ALL} page
 # extract awb number using regex
 def extract_AWB_from_label_text(text):
     import re
-    pattern = "^AP Article Id: [0-9]+"
+    pattern = "^AP Article Id: [0-9]{23}"
     extracted_text = re.search(pattern=pattern, string=text).group(0)
     extracted_awb = re.sub("AP Article Id: ", "", extracted_text)
     return extracted_awb
