@@ -3,6 +3,7 @@ from PyPDF2 import PdfReader, PdfWriter
 # import glob
 import os
 import time
+from datetime import date
 import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -14,6 +15,22 @@ just_fix_windows_console()
 
 #get the downloads folder
 download_folder_path = os.path.join(os.environ['USERPROFILE'], "Downloads")
+
+# create a sub-folder for today's orders
+
+def create_sub_folder():
+    today = date.today()
+    prefix = "Tearribles_"
+    serial = today.strftime("%y")+today.strftime("%m")+today.strftime("%d")
+    try:
+        print(f"Creating folder {prefix}{serial}")
+        os.mkdir(os.path.join(download_folder_path, prefix+serial))
+    except:
+        print(f"Folder {prefix}{serial} is already there.")
+    
+    return f"{prefix}{serial}"
+
+today_folder = create_sub_folder()
 
 # list all pdf files in the folder (last saved first)
 def list_of_pdfs(folder_path):
@@ -55,7 +72,7 @@ def is_Tearribles_label(filepath):
 last_pdf = ""
 for i in list_pdfs:
     short_i = i.replace(download_folder_path+"\\", "")
-    print(f"Inspecting {short_i: <70}", end=" ")
+    print(f"{Style.DIM}Inspecting{Style.RESET_ALL} {Style.BRIGHT}{short_i: <70}{Style.RESET_ALL}", end=" ")
     ref_i, readable_i = is_Tearribles_label(i)
     if ref_i and readable_i:
         last_pdf = i
@@ -64,10 +81,10 @@ for i in list_pdfs:
     if readable_i:
         print(f"{Style.DIM}Not a Tearribles label.{Style.RESET_ALL}")
     else:
-        print(f"{Style.DIM}{Fore.LIGHTRED_EX}Non-readable file.{Style.RESET_ALL}")
+        print(f"{Style.DIM}{Fore.LIGHTRED_EX}Can't see what's inside.{Style.RESET_ALL}")
         
 if last_pdf == "":
-    print(f"\n{Style.BRIGHT}{Fore.RED}None of the labels is valid. This is pointless.{Style.RESET_ALL}")
+    print(f"\n{Style.BRIGHT}{Fore.RED}None of the labels is valid. This is pointless.\n{Style.RESET_ALL}")
     sys.exit()
     
 
@@ -133,17 +150,17 @@ def PDF_Splitter(input_file, output_file_name, page_index):
 
 
 # execute the splitting
-inputfile = last_pdf
-outputfile = f"{download_folder_path}\\{ref[0]}_{awb[0]}.pdf"
-index = 0
+# inputfile = last_pdf
+# outputfile = f"{download_folder_path}\\Tearribles\\{ref[0]}_{awb[0]}.pdf"
+# index = 0
 
 for i in range(len(all_text)):
     PDF_Splitter(
         input_file=f"{last_pdf}",
-        output_file_name=f"{download_folder_path}\\{ref[i]}_{awb[i]}.pdf",
+        output_file_name=f"{download_folder_path}\\{today_folder}\\{ref[i]}_{awb[i]}.pdf",
         page_index=i
     )
-print(f"\nSplitted labels are located at {Fore.CYAN}{download_folder_path}{Style.RESET_ALL}")
+print(f"\nSplitted labels are located at {Fore.CYAN}{download_folder_path}\\{today_folder}{Style.RESET_ALL}")
 
 # setting up Chrome
 chrome_options = Options()
