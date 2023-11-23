@@ -1,11 +1,15 @@
 from PyPDF2 import PdfReader, PdfWriter
-import re
-import glob
+# import re
+# import glob
 import os
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+
+# experiment with colored console output
+from colorama import just_fix_windows_console, Fore, Style
+just_fix_windows_console()
 
 #get the downloads folder
 download_folder_path = os.path.join(os.environ['USERPROFILE'], "Downloads")
@@ -46,7 +50,7 @@ for i in list_pdfs:
     print(f"Inspecting {short_i}:", end=" ")
     if is_Tearribles_label(i):
         last_pdf = i
-        print(f"Label found!")
+        print(f"{Fore.GREEN}Label found!{Style.RESET_ALL}")
         break
     else:
         print("Not a Tearribles label.")
@@ -54,7 +58,7 @@ for i in list_pdfs:
 
 
 
-print(f"\nReading {last_pdf}.")
+print(f"\nReading {Fore.CYAN}{last_pdf}{Style.RESET_ALL}.")
 # reader = PdfReader(f"{last_pdf}")
 
 # extract text from pages to a list
@@ -71,7 +75,7 @@ def extract_text_from_pdf(file):
 all_text = extract_text_from_pdf(f"{last_pdf}")
 
 # length of the all_text list is also number of pages
-print(f"The selected file has {len(all_text)} page(s)")
+print(f"The selected file has {Fore.YELLOW}{len(all_text)}{Style.RESET_ALL} page(s)")
 
 
 # extract awb number using regex
@@ -125,7 +129,7 @@ for i in range(len(all_text)):
         output_file_name=f"{download_folder_path}\\{ref[i]}_{awb[i]}.pdf",
         page_index=i
     )
-print(f"\nSplitted labels are located at {download_folder_path}")
+print(f"\nSplitted labels are located at {Fore.CYAN}{download_folder_path}{Style.RESET_ALL}")
 
 # setting up Chrome
 chrome_options = Options()
