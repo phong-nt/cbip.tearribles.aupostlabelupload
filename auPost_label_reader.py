@@ -3,6 +3,7 @@ from PyPDF2 import PdfReader, PdfWriter
 # import glob
 import os
 import time
+import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -33,29 +34,42 @@ list_pdfs = list_of_pdfs(download_folder_path)
 def is_Tearribles_label(filepath):
     import re
     
-    reader = PdfReader(filepath)
-    first_page = reader.pages[0]
-    first_page_text = first_page.extract_text()
-    ref_found = len(re.findall("Ref: AU[0-9]{4}", first_page_text))
+    ref_found = 0
+    readable = True
+    ref = False
+    try:
+        reader = PdfReader(filepath)
+        first_page = reader.pages[0]
+        first_page_text = first_page.extract_text()
+        ref_found = len(re.findall("Ref: AU[0-9]{4}", first_page_text))
+    except:
+        readable = False
+        # print(f"{Fore.LIGHTRED_EX}File not readable.{Style.RESET_ALL}")
     if ref_found >= 1:
-        return True
+        ref = True
     else:
-        return False
-    
+        ref = False
+    return ref, readable
 
 # iterate through the list, detecting Tearribles label    
-last_pdf = list_pdfs[0]
+last_pdf = ""
 for i in list_pdfs:
     short_i = i.replace(download_folder_path+"\\", "")
-    print(f"Inspecting {short_i: <45}", end=" ")
-    if is_Tearribles_label(i):
+    print(f"Inspecting {short_i: <70}", end=" ")
+    ref_i, readable_i = is_Tearribles_label(i)
+    if ref_i and readable_i:
         last_pdf = i
         print(f"{Fore.GREEN}Label found!{Style.RESET_ALL}")
         break
+    if readable_i:
+        print(f"{Style.DIM}Not a Tearribles label.{Style.RESET_ALL}")
     else:
-        print("Not a Tearribles label.")
+        print(f"{Style.DIM}{Fore.LIGHTRED_EX}Non-readable file.{Style.RESET_ALL}")
         
-
+if last_pdf == "":
+    print(f"\n{Style.BRIGHT}{Fore.RED}None of the labels is valid. This is pointless.{Style.RESET_ALL}")
+    sys.exit()
+    
 
 
 print(f"\nReading {Fore.CYAN}{last_pdf}{Style.RESET_ALL}.")
