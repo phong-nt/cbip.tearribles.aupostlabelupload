@@ -13,24 +13,26 @@ from selenium.webdriver.common.by import By
 from colorama import just_fix_windows_console, Fore, Style
 just_fix_windows_console()
 
+print(f"{Style.BRIGHT}Tearribles label processor by Nguyen Tien Phong\n\n\n{Style.RESET_ALL}")
+
 #get the downloads folder
 download_folder_path = os.path.join(os.environ['USERPROFILE'], "Downloads")
-
+print(f"Looking into Downloads folder at {Fore.CYAN}{download_folder_path}{Style.RESET_ALL}\n")
 # create a sub-folder for today's orders
 
-def create_sub_folder():
+def create_sub_folder(under):
     today = date.today()
     prefix = "Tearribles_"
     serial = today.strftime("%y")+today.strftime("%m")+today.strftime("%d")
     try:
-        print(f"Creating folder {prefix}{serial}")
-        os.mkdir(os.path.join(download_folder_path, prefix+serial))
+        print(f"Creating subfolder {Fore.CYAN}{prefix}{serial}{Style.RESET_ALL}")
+        os.mkdir(os.path.join(under, prefix+serial))
     except:
-        print(f"Folder {prefix}{serial} is already there.")
+        print(f"{Fore.YELLOW}The folder is already there.{Style.RESET_ALL}")
     
     return f"{prefix}{serial}"
 
-today_folder = create_sub_folder()
+
 
 # list all pdf files in the folder (last saved first)
 def list_of_pdfs(folder_path):
@@ -72,11 +74,11 @@ def is_Tearribles_label(filepath):
 last_pdf = ""
 for i in list_pdfs:
     short_i = i.replace(download_folder_path+"\\", "")
-    print(f"{Style.DIM}Inspecting{Style.RESET_ALL} {Style.BRIGHT}{short_i: <70}{Style.RESET_ALL}", end=" ")
+    print(f"\t{Style.DIM}Inspecting{Style.RESET_ALL} {Style.BRIGHT}{short_i: <70}{Style.RESET_ALL}", end=" ")
     ref_i, readable_i = is_Tearribles_label(i)
     if ref_i and readable_i:
         last_pdf = i
-        print(f"{Fore.GREEN}Label found!{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Label found!\n{Style.RESET_ALL}")
         break
     if readable_i:
         print(f"{Style.DIM}Not a Tearribles label.{Style.RESET_ALL}")
@@ -86,6 +88,8 @@ for i in list_pdfs:
 if last_pdf == "":
     print(f"\n{Style.BRIGHT}{Fore.RED}None of the labels is valid. This is pointless.\n{Style.RESET_ALL}")
     sys.exit()
+else:
+    today_folder = create_sub_folder(under=download_folder_path)
     
 
 
@@ -106,7 +110,7 @@ def extract_text_from_pdf(file):
 all_text = extract_text_from_pdf(f"{last_pdf}")
 
 # length of the all_text list is also number of pages
-print(f"The selected file has {Fore.YELLOW}{len(all_text)}{Style.RESET_ALL} page(s)")
+print(f"The selected file has {Fore.YELLOW}{len(all_text)}{Style.RESET_ALL} page(s)\n")
 
 
 # extract awb number using regex
