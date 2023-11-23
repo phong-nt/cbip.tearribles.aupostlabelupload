@@ -1,16 +1,63 @@
 from PyPDF2 import PdfReader, PdfWriter
 import re
+import glob
+import os
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
-download_folder_path = "C:\\Users\\nguye\\Downloads\\"
-merged_file_name = input("Input PDF file name: ")
+#get the downloads folder
+download_folder_path = os.path.join(os.environ['USERPROFILE'], "Downloads")
 
-print(f"\nReading {download_folder_path}{merged_file_name}.")
-reader = PdfReader(f"{download_folder_path}{merged_file_name}")
+# list all pdf files in the folder (last saved first)
+def list_of_pdfs(folder_path):
+    import glob
+    import os
 
+    full_path = os.path.join(folder_path, "*.pdf")
+    pdf_files = glob.glob(full_path)
+    pdf_files.sort(key=os.path.getctime)
+    pdf_files.reverse()
+    
+    return pdf_files
+
+
+list_pdfs = list_of_pdfs(download_folder_path)
+
+# look into each file, if there is "Ref: AU[0-9]{4}" then True, else False
+def is_Tearribles_label(filepath):
+    import re
+    
+    reader = PdfReader(filepath)
+    first_page = reader.pages[0]
+    first_page_text = first_page.extract_text()
+    ref_found = len(re.findall("Ref: AU[0-9]{4}", first_page_text))
+    if ref_found >= 1:
+        return True
+    else:
+        return False
+    
+
+# iterate through the list, detecting Tearribles label    
+last_pdf = list_pdfs[0]
+for i in list_pdfs:
+    short_i = i.replace(download_folder_path+"\\", "")
+    print(f"Inspecting {short_i}:", end=" ")
+    if is_Tearribles_label(i):
+        last_pdf = i
+        print(f"Label found!")
+        break
+    else:
+        print("Not a Tearribles label.")
+        
+
+
+
+print(f"\nReading {last_pdf}.")
+# reader = PdfReader(f"{last_pdf}")
+
+# extract text from pages to a list
 def extract_text_from_pdf(file):
     reader = PdfReader(file)
     output = []
@@ -21,10 +68,13 @@ def extract_text_from_pdf(file):
     
     return output
 
-all_text = extract_text_from_pdf(f"{download_folder_path}{merged_file_name}")
+all_text = extract_text_from_pdf(f"{last_pdf}")
+
+# length of the all_text list is also number of pages
 print(f"The selected file has {len(all_text)} page(s)")
 
 
+# extract awb number using regex
 def extract_AWB_from_label_text(text):
     import re
     pattern = "^AP Article Id: [0-9]+"
@@ -32,6 +82,8 @@ def extract_AWB_from_label_text(text):
     extracted_awb = re.sub("AP Article Id: ", "", extracted_text)
     return extracted_awb
 
+
+# extract order ref using regex
 def extract_REF_from_label_text(text):
     import re
     pattern = "Ref: AU[0-9]{4}"
@@ -40,9 +92,7 @@ def extract_REF_from_label_text(text):
     return extracted_ref
 
 
-
-
-
+# iterate through the all_text list and execute the above functions
 awb = []
 ref = []
 for i in all_text:
@@ -51,10 +101,10 @@ for i in all_text:
     print(extract_REF_from_label_text(i)+": "+extract_AWB_from_label_text(i))
 
 
-
+# split the pdf by each page
 def PDF_Splitter(input_file, output_file_name, page_index):
     with open(input_file, "rb") as infile:
-        reader = PdfReader(input_file)
+        reader = PdfReader(infile)
         writer = PdfWriter()
         writer.add_page(reader.pages[page_index])
 
@@ -63,17 +113,19 @@ def PDF_Splitter(input_file, output_file_name, page_index):
     with open(output_file_name, 'wb') as outfile:
         writer.write(outfile)
 
-inputfile = f"{download_folder_path}{merged_file_name}"
-outputfile = f"{download_folder_path}{ref[0]}_{awb[0]}.pdf"
+
+# execute the splitting
+inputfile = last_pdf
+outputfile = f"{download_folder_path}\\{ref[0]}_{awb[0]}.pdf"
 index = 0
 
 for i in range(len(all_text)):
     PDF_Splitter(
-        input_file=f"{download_folder_path}{merged_file_name}",
-        output_file_name=f"{download_folder_path}{ref[i]}_{awb[i]}.pdf",
+        input_file=f"{last_pdf}",
+        output_file_name=f"{download_folder_path}\\{ref[i]}_{awb[i]}.pdf",
         page_index=i
     )
-print(f"\nSplitted labels are located at {download_folder_path}.")
+print(f"\nSplitted labels are located at {download_folder_path}")
 
 # setting up Chrome
 chrome_options = Options()
@@ -142,7 +194,7 @@ for i in range(len(awb)):
     try_input(driver, "//input[@name='order_bucket[delivery_ref_no]']", awb[i])
     time.sleep(1)
 
-    label_path = download_folder_path+ref[i]+"_"+awb[i]+".pdf"
+    label_path = download_folder_path+"\\"+ref[i]+"_"+awb[i]+".pdf"
     print(f"\tStep 3: Uploading label at {label_path}")
     try_input(driver, "//input[@id='order_bucket_order_invoices_attributes_0_data']", label_path)
     time.sleep(1)

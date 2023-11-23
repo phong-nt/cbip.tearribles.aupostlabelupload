@@ -1,8 +1,9 @@
 import glob
 import os
 
-download_folder = "C:\\Users\\nguye\\Downloads\\"
+downloads_folder_path = os.path.join(os.environ['USERPROFILE'], "Downloads")
 
-list_of_files = glob.glob(download_folder+"*")
-latest_file = max(list_of_files, key=os.path.getctime)
-print(latest_file)
+
+pdf_files = glob.glob(os.path.join(downloads_folder_path,"*.pdf"))
+pdf_files.sort(key=os.path.getctime)
+pdf_files.reverse()
