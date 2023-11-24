@@ -233,7 +233,7 @@ for i in range(len(awb)):
     try_input(driver, "//input[@name='order_bucket[delivery_ref_no]']", awb[i])
     time.sleep(1)
 
-    label_path = download_folder_path+"\\"+ref[i]+"_"+awb[i]+".pdf"
+    label_path = os.path.join(download_folder_path, today_folder, f"{ref[i]}_{awb[i]}.pdf")
     print(f"\tStep 3: Uploading label at {label_path}")
     try_input(driver, "//input[@id='order_bucket_order_invoices_attributes_0_data']", label_path)
     time.sleep(1)
