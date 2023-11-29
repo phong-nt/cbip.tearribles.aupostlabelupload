@@ -3,6 +3,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from fake_user_agent import user_agent
+
+
 
 
 def try_input(driver, xpath, content):
@@ -29,7 +32,9 @@ def try_gettxt(driver, xpath):
 
 
 login_page = r"https://ewms.anchanto.com/login"
+ua = user_agent("chrome")
 chrome_options = Options()
+chrome_options.add_argument(f"--user-agent={ua}")
 chrome_options.add_experimental_option("detach", True)
 chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 driver = webdriver.Chrome(options=chrome_options)
@@ -38,7 +43,7 @@ email_box_path = '//div[@class="form-group"]/input[@id="user_email"]'
 passw_box_path = '//div[@class="form-group"]/input[@id="user_password"]'
 login_btn_path = '//div[@class="form-group"]/input[@name="commit"]'
 
-driver.get("https://google.com")
+driver.get(login_page)
 print(f"Opening {driver.current_url}")
 
 print("Trying to login:", end=" ")
