@@ -6,16 +6,27 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 def try_input(driver, xpath, content):
-    elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath))).send_keys(content)
+    try:
+        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath))).send_keys(content)
+    except:
+        print(f"Cannot enter {content} into {xpath}")
 
 
 def try_click(driver, xpath):
-    elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+    try:
+        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+    except:
+        print(f"Cannot locate {xpath}")
 
 
 def try_gettxt(driver, xpath):
-    elem = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, xpath))).text
-    return elem
+    try:
+        elem = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, xpath))).text
+        return elem
+    except:
+        print(f"Cannot locate {xpath}")
+        return None
+
 
 login_page = r"https://ewms.anchanto.com/login"
 chrome_options = Options()
@@ -28,7 +39,7 @@ passw_box_path = '//div[@class="form-group"]/input[@id="user_password"]'
 login_btn_path = '//div[@class="form-group"]/input[@name="commit"]'
 
 print(f"Entering {login_page}")
-driver.get(login_page)
+driver.get("https://google.com")
 
 print("Trying to login:", end=" ")
 try_input(driver, email_box_path, 'phong.nguyen@cbiplogistics.com')
