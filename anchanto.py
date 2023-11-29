@@ -38,8 +38,8 @@ email_box_path = '//div[@class="form-group"]/input[@id="user_email"]'
 passw_box_path = '//div[@class="form-group"]/input[@id="user_password"]'
 login_btn_path = '//div[@class="form-group"]/input[@name="commit"]'
 
-print(f"Entering {login_page}")
 driver.get("https://google.com")
+print(f"Opening {driver.current_url}")
 
 print("Trying to login:", end=" ")
 try_input(driver, email_box_path, 'phong.nguyen@cbiplogistics.com')
@@ -47,8 +47,7 @@ try_input(driver, passw_box_path, 'Cbip@1994')
 try_click(driver, login_btn_path)
 
 alert_div_path = '//div[@class="result"]/div[1]'
-alert = driver.find_element(By.XPATH, alert_div_path).text
-print(alert)
+print(try_gettxt(driver, alert_div_path))
 
 welcm_mes_path = '//ul[@class="nav ace-nav"]/li[6]/a[@class="dropdown-toggle"]'
 print(try_gettxt(driver, welcm_mes_path))
