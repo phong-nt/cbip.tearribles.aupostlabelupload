@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -20,6 +21,12 @@ def try_input(driver, xpath, content):
     except:
         print(f"Cannot enter {content} into {xpath}")
 
+def try_select(driver, xpath, value):
+    try:
+        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath)))
+        Select(elem).select_by_visible_text(value)
+    except:
+        print(f"Failed to select {value}")
 
 def try_click(driver, xpath):
     try:
@@ -46,9 +53,15 @@ chrome_options.add_experimental_option("detach", True)
 chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 driver = webdriver.Chrome(options=chrome_options)
 
-email_box_path = '//div[@class="form-group"]/input[@id="user_email"]'
-passw_box_path = '//div[@class="form-group"]/input[@id="user_password"]'
-login_btn_path = '//div[@class="form-group"]/input[@name="commit"]'
+def try_login_anchanto(driver, email, password):
+    driver.get(r"https://ewms.anchanto.com/login")
+    email_box_path = '//div[@class="form-group"]/input[@id="user_email"]'
+    passw_box_path = '//div[@class="form-group"]/input[@id="user_password"]'
+    login_btn_path = '//div[@class="form-group"]/input[@name="commit"]'
+    try_input(driver, email_box_path, email)
+    try_input(driver, passw_box_path, password)
+    try_click(driver, login_btn_path)
+
 
 #driver.get(login_page)
 #print(f"Opening {driver.current_url}")
