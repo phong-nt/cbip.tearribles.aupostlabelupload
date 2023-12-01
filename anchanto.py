@@ -7,6 +7,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from fake_user_agent import user_agent
 
 
+def alter_checkbox(driver, xpath, altered_to):
+    try:
+        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, xpath)))
+        if elem.is_selected() != altered_to:
+            try_click(driver, xpath)
+    except:
+        print(f"Cannot locate {xpath}")
+
 
 def try_clear(driver, xpath):
     try:
