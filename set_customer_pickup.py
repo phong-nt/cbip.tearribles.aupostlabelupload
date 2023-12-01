@@ -21,7 +21,7 @@ for i in range(1, len(sys.argv)):
     time.sleep(3)
     # try to click on the checkbox
     #TODO: first check if checkbox is unchecked, if checked then ignore
-    anchanto.try_click(driver, '//label[contains(text(), "Is Customer Pickup?")]//preceding-sibling::div/label/input')
+    anchanto.alter_checkbox(driver, '//label[contains(text(), "Is Customer Pickup?")]//preceding-sibling::div/label/input', True)
     time.sleep(3)
     anchanto.try_click(driver, '//input[@value="Update"]')
 
