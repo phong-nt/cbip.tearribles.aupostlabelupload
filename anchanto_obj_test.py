@@ -21,6 +21,7 @@ class AnchantoWeb:
         self.options.add_experimental_option("excludeSwitches", ["enable-logging"])
         self.driver = webdriver.Chrome(options=self.options)
 
+
     def clear(self, xpath):
         try:
             WebDriverWait(self.driver, AnchantoWeb.global_timeout).until(EC.element_to_be_clickable((By.XPATH, xpath))).clear()
@@ -62,6 +63,7 @@ class AnchantoWeb:
 
     def open_wms(self):
         self.driver.get(AnchantoWeb.LOGIN_PAGE)
+
 
     def sign_in(self, username, password):
         if self.driver.current_url == AnchantoWeb.LOGIN_PAGE:
