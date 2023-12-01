@@ -54,10 +54,10 @@ class AnchantoWeb:
         try:
             msg = WebDriverWait(self.driver, AnchantoWeb.global_timeout).until(EC.visibility_of_element_located((By.XPATH, xpath))).text
             print(msg)
-            return True
+            return msg
         except:
             print("Can't read the message.")
-            return False
+            return ""
                 
 
     def open_wms(self):
@@ -81,5 +81,5 @@ class AnchantoWeb:
 # ua = user_agent("chrome")
 browser = AnchantoWeb()
 browser.open_wms()
-browser.sign_in("phong.nguyen@cbiplogistics.com", "Cbip@1994")
+browser.sign_in("phong.nguyen@cbiplogistics.com", "Cabip@1994")
 
