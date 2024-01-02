@@ -217,12 +217,12 @@ def wait_element(driver, element_xpath):
         print("-", end='')
 
 def try_select(driver, element_xpath, select_index):
-    try:
-        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable(By.XPATH, element_xpath))
+        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, element_xpath)))
         elem_select = Select(elem)
         elem_select.select_by_index(select_index)
-    except:
-        print(f"Cannot locate element {element_xpath}")
+    
+        
+        
 
 
 # log in
