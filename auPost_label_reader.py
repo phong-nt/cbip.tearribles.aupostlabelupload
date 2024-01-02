@@ -8,6 +8,8 @@ import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.select import Select
 
 # experiment with colored console output
 from colorama import just_fix_windows_console, Fore, Style
@@ -210,6 +212,9 @@ def wait_element(driver, element_xpath):
     except:
         time.sleep(1)
         print("-", end='')
+
+def try_select(driver, element_xpath):
+    webdriver
 
 
 # log in
