@@ -10,6 +10,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 # experiment with colored console output
 from colorama import just_fix_windows_console, Fore, Style
@@ -213,8 +216,13 @@ def wait_element(driver, element_xpath):
         time.sleep(1)
         print("-", end='')
 
-def try_select(driver, element_xpath):
-    webdriver
+def try_select(driver, element_xpath, select_index):
+    try:
+        elem = WebDriverWait(driver, 10).until(EC.element_to_be_clickable(By.XPATH, element_xpath))
+        elem_select = Select(elem)
+        elem_select.select_by_index(select_index)
+    except:
+        print(f"Cannot locate element {element_xpath}")
 
 
 # log in
@@ -235,6 +243,7 @@ for i in range(len(awb)):
     try_click(driver, "//button[@id='check-order']")
     time.sleep(1)
     print(f"\tStep 2: Inputting AWB: {awb[i]}")
+    try_select(driver, "//select[@id='order_bucket_carrier_code']", 2)
     try_input(driver, "//input[@name='order_bucket[delivery_ref_no]']", awb[i])
     time.sleep(1)
 
